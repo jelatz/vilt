@@ -10,12 +10,12 @@ use App\Services\RegisterService;
 
 class RegisterController extends Controller
 {
-  protected $registerService;
+    protected $registerService;
 
-  public function __construct(RegisterService $registerService)
-  {
-    $this->registerService = $registerService;
-  }
+    public function __construct(RegisterService $registerService)
+    {
+        $this->registerService = $registerService;
+    }
 
     public function index()
     {
@@ -32,7 +32,6 @@ class RegisterController extends Controller
 
 
         $result = $this->registerService->registerUser($validated);
-
         return redirect()->route('home')->with('success', 'User registered!')->with('result', $result);
     }
 }

@@ -3,20 +3,25 @@
 namespace App\Repositories;
 
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class RegisterRepository{
+class RegisterRepository
+{
 
-public function create(array $data)
+  public function create(array $data)
   {
-    try{
-      return User::create([
+    try {
+      $user = User::create([
         'name' => $data['name'],
         'email' => $data['email'],
         'password' => bcrypt($data['password']),
       ]);
+
+      Auth::login($user);
+
+      return $user;
     } catch (\Exception $e) {
-      // Handle the exception (e.g., log it, rethrow it, etc.)
+      // Optionally log or handle error
       return null;
     }
   }
