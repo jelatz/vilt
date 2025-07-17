@@ -20,6 +20,12 @@
                 >
                     Register
                 </Link>
+                <Link
+                    :href="route('login')"
+                    class="text-blue-600 hover:text-blue-800"
+                >
+                    Login
+                </Link>
             </nav>
         </header>
     </div>

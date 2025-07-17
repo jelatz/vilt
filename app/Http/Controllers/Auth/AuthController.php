@@ -8,7 +8,7 @@ use Inertia\Inertia;
 use App\Services\RegisterService;
 
 
-class RegisterController extends Controller
+class AuthController extends Controller
 {
     protected $registerService;
 
@@ -33,5 +33,10 @@ class RegisterController extends Controller
 
         $result = $this->registerService->registerUser($validated);
         return redirect()->route('home')->with('success', 'User registered!')->with('result', $result);
+    }
+
+    public function loginIndex()
+    {
+        return Inertia::render('Auth/Login');
     }
 }
