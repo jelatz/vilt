@@ -26,13 +26,15 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:50',
-            'email' => 'required|string|email|max:80|unique:users',
+            'email' => 'required|string|max:80|unique:users',
             'password' => 'required|confirmed',
         ]);
 
 
         $result = $this->registerService->registerUser($validated);
-        return redirect()->route('home')->with('success', 'User registered!')->with('result', $result);
+        return Inertia::render('Home', [
+            'result' => $result,
+        ])->with('success', 'Registration successful!');
     }
 
     public function loginIndex()
