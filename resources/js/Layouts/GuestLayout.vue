@@ -1,5 +1,5 @@
 <template>
-    <div class="">
+    <div class="grid place-items-center mt-40">
         <slot />
     </div>
 </template>
