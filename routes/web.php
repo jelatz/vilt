@@ -12,4 +12,15 @@ use Inertia\Inertia;
 // sleep(1);
 Route::get('/', function () {
     return Inertia::render('Auth/Login');
-});
+})->name('login');
+
+Route::get('/register', function () {
+    return Inertia::render('Auth/Register');
+})->name('register');
+Route::post('/register', [AuthController::class, 'store'])->name('register.store');
+
+Route::get('/forgot-password', function () {
+    return Inertia::render('Auth/ForgotPassword');
+})->name('password.request');
+
+

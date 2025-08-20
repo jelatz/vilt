@@ -5,17 +5,16 @@
         <!-- Text / Email / Password / Number -->
         <input v-if="['text', 'email', 'password', 'number', 'date'].includes(form.type)" :type="form.type"
             :id="form.id" :name="form.name" :placeholder="form.placeholder"
-            :class="['rounded-md border shadow-md px-2 py-1 h-fit', form.inputClass]" :value="modelValue"
-            @input="$emit('update:modelValue', $event.target.value)" />
+            :class="['rounded-md border shadow-md px-2 py-1', form.inputClass]" :value="modelValue" @input="onInput" />
 
         <!-- Textarea -->
         <textarea v-else-if="form.type === 'textarea'" :id="form.id" :name="form.name" :placeholder="form.placeholder"
-            :class="form.inputClass" :value="modelValue"
-            @input="$emit('update:modelValue', $event.target.value)"></textarea>
+            :class="form.inputClass" :value="modelValue" @input="onInput"></textarea>
 
         <!-- Select -->
-        <select v-else-if="form.type === 'select'" :id="form.id" :name="form.name" :class="form.inputClass"
-            :value="modelValue" @change="$emit('update:modelValue', $event.target.value)">
+        <select v-else-if="form.type === 'select'" :id="form.id" :name="form.name"
+            :class="['rounded-md border shadow-md px-2 py-1', form.inputClass]" :value="modelValue"
+            @change="$emit('update:modelValue', $event.target.value)">
             <option v-for="(option, i) in form.options" :key="i" :value="option.value">{{ option.label }}</option>
         </select>
 
@@ -41,6 +40,10 @@
                 {{ option.label }}
             </label>
         </div>
+        <!-- Error message -->
+        <p v-if="errors && errors[form.model]" class="text-red-500 text-sm mt-1">
+            {{ errors[form.model] }}
+        </p>
     </div>
 </template>
 
@@ -48,6 +51,28 @@
 defineProps({
     modelValue: [String, Number, Boolean, Array],
     form: Object,
+    errors: Object,
 })
-const emit = defineEmits(['update:modelValue'])
+
+const emit = defineEmits(['update:modelValue', 'clearError', 'invalidEmail'])
+
+// regex for email
+const isValidEmail = (value) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return re.test(value)
+}
+
+const onInput = (e) => {
+    const value = e.target.value
+    emit('update:modelValue', value)
+    emit('clearError', e.target.name)
+
+    if (e.target.type === 'email') {
+        if (!isValidEmail(value)) {
+            emit('invalidEmail', { field: e.target.name, message: 'Invalid email address' })
+        } else {
+            emit('invalidEmail', { field: e.target.name, message: null })
+        }
+    }
+}
 </script>

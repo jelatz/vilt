@@ -6,15 +6,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Services\RegisterService;
+use App\Services\AuthService;
 
 
 class AuthController extends Controller
 {
-    protected $registerService;
+    protected $authService;
 
-    public function __construct(RegisterService $registerService)
+    public function __construct(AuthService $authService)
     {
-        $this->registerService = $registerService;
+        $this->authService = $authService;
     }
 
     public function index()
@@ -25,16 +26,16 @@ class AuthController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:50',
-            'email' => 'required|string|max:80|unique:users',
+            'username' => 'required|string|max:50',
+            'email' => 'required|string|email|max:80|unique:users',
             'password' => 'required|confirmed',
+            'password_confirmation' => 'required|string|same:password'
         ]);
 
+        dd($validated);
 
-        $result = $this->registerService->registerUser($validated);
-        return Inertia::render('Home', [
-            'result' => $result,
-        ])->with('success', 'Registration successful!');
+
+        return to_route('login')->with(['success' => 'Registration successful!']);
     }
 
     public function loginIndex()
