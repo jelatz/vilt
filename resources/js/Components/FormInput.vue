@@ -5,11 +5,12 @@
         <!-- Text / Email / Password / Number -->
         <input v-if="['text', 'email', 'password', 'number', 'date'].includes(form.type)" :type="form.type"
             :id="form.id" :name="form.name" :placeholder="form.placeholder"
-            :class="['rounded-md border shadow-md px-2 py-1', form.inputClass]" :value="modelValue" @input="onInput" />
+            :class="['rounded-md border shadow-md px-2 py-1', form.inputClass]" :value="modelValue" @input="onInput"
+            @blur="onBlur" />
 
         <!-- Textarea -->
         <textarea v-else-if="form.type === 'textarea'" :id="form.id" :name="form.name" :placeholder="form.placeholder"
-            :class="form.inputClass" :value="modelValue" @input="onInput"></textarea>
+            :class="form.inputClass" :value="modelValue" @input="onInput" @blur="onBlur"></textarea>
 
         <!-- Select -->
         <select v-else-if="form.type === 'select'" :id="form.id" :name="form.name"
@@ -54,19 +55,22 @@ defineProps({
     errors: Object,
 })
 
+
 const emit = defineEmits(['update:modelValue', 'clearError', 'invalidEmail'])
 
-// regex for email
+// regex for email. check if the email is legit. text with no whitespace before @, an @ and a text after @
 const isValidEmail = (value) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return re.test(value)
 }
 
 const onInput = (e) => {
-    const value = e.target.value
-    emit('update:modelValue', value)
-    emit('clearError', e.target.name)
+    emit('update:modelValue', e.target.value)
+    emit('clearError', e.target.name) // clear old server-side errors, if any
+}
 
+const onBlur = (e) => {
+    const value = e.target.value
     if (e.target.type === 'email') {
         if (!isValidEmail(value)) {
             emit('invalidEmail', { field: e.target.name, message: 'Invalid email address' })
