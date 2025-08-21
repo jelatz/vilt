@@ -23,6 +23,8 @@ import { useForm } from '@inertiajs/vue3'
 import GuestLayout from '@/Layouts/GuestLayout.vue'
 import FormInput from '@/Components/FormInput.vue'
 import Swal from "sweetalert2";
+import { router } from '@inertiajs/vue3'
+
 
 defineOptions({
     layout: GuestLayout
@@ -48,14 +50,24 @@ const registerSubmit = () => {
     form.post(route('register.store'), {
         onSuccess: () => {
             form.reset()
-            // SweetAlert success popup
             Swal.fire({
                 title: 'Registered!',
                 text: 'Your account has been created successfully.',
                 icon: 'success',
                 confirmButtonText: 'OK'
+            }).then(() => {
+                router.visit(route('login'))
             })
-            route('login')
+        },
+        onError: () => {
+            Swal.fire({
+                title: 'Error!',
+                text: 'There was an error creating your account. Please contact IT Department',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                form.reset();
+            })
         }
     })
 }

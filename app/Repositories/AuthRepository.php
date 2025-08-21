@@ -3,26 +3,38 @@
 namespace App\Repositories;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthRepository
 {
-
     public function create(array $data)
     {
         try {
             $user = User::create([
-                'name' => $data['name'],
+                'name' => $data['username'],
                 'email' => $data['email'],
-                'password' => bcrypt($data['password']),
+                'password' => Hash::make($data['password']),
             ]);
-
-            Auth::login($user);
 
             return $user;
         } catch (\Exception $e) {
-            // Optionally log or handle error
+            return $e->getMessage($data);
+            // dd($e->getMessage(), $data);
+        }
+    }
+
+    public function login(array $credentials)
+    {
+        try {
+            $user = User::where('name', $credentials['username'])->first();
+
+            if ($user && Hash::check($credentials['password'], $user->password)) {
+                return $user;
+            }
+
             return null;
+        } catch (\Exception $e) {
+            return $e->getMessage();
         }
     }
 }

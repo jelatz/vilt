@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\DashboardController;
 
 use Inertia\Inertia;
 
@@ -10,17 +11,20 @@ use Inertia\Inertia;
 // });
 
 // sleep(1);
-Route::get('/', function () {
-    return Inertia::render('Auth/Login');
-})->name('login');
+Route::middleware('guest')->group(function () {
+    Route::get('/', [AuthController::class, 'loginIndex'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.store');
 
-Route::get('/register', function () {
-    return Inertia::render('Auth/Register');
-})->name('register');
-Route::post('/register', [AuthController::class, 'store'])->name('register.store');
+    Route::get('/register', [AuthController::class, 'index'])->name('register');
+    Route::post('/register', [AuthController::class, 'store'])->name('register.store');
 
-Route::get('/forgot-password', function () {
-    return Inertia::render('Auth/ForgotPassword');
-})->name('password.request');
+    Route::get('/forgot-password', fn() => Inertia::render('Auth/ForgotPassword'))
+        ->name('password.request');
+});
 
 
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+});

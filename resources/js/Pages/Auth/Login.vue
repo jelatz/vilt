@@ -3,7 +3,7 @@
     <Head title="Login" />
     <div class="border border-gray-100 shadow-lg rounded-md p-5 w-[30rem]">
         <h1 class="text-4xl text-center font-bold block mx-auto my-2">Login</h1>
-        <form>
+        <form @submit.prevent="loginSubmit">
             <FormInput v-for="field in fields" :key="field.model" :form="field" v-model="form[field.model]"
                 :errors="form.errors" />
             <Link class="hover:text-blue-900" :href="route('password.request')">Forgot Password?</Link>
@@ -17,22 +17,49 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { useForm } from '@inertiajs/vue3'
 import GuestLayout from '@/Layouts/GuestLayout.vue'
 import FormInput from '@/Components/FormInput.vue'
+import Swal from "sweetalert2";
+import { router } from '@inertiajs/vue3'
 defineOptions({
     layout: GuestLayout
 })
 
-const form = reactive({
-    email: '',
-    username: ''
+const form = useForm({
+    username: '',
+    password: '',
 })
 
 const fields = [
     { type: "text", label: "Username :", model: "username", id: "username", name: "username", placeholder: "Enter username", inputClass: "mt-1 w-full h-10", labelClass: "block font-bold" },
     { type: "password", label: "Password :", model: "password", id: "password", name: "password", placeholder: "Enter password", inputClass: "mt-1 w-full h-10", labelClass: "block font-bold" },
 ];
+
+const loginSubmit = () => {
+    form.post(route('login.store'), {
+        onSuccess: () => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Login Successful',
+                text: 'Welcome back!',
+            }).then(() => {
+                router('/dashboard')
+            })
+        },
+        onError: (error) => {
+            // Handle login error
+            Swal.fire({
+                icon: 'error',
+                title: 'Login Failed',
+                text: error.message,
+            }).then(() => {
+                form.reset('password')
+            })
+                ;
+        }
+    })
+}
 
 </script>
 

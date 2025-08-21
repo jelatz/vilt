@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Repositories\AuthRepository;
+use Illuminate\Support\Facades\Auth;
+
 
 class AuthService
 {
@@ -13,8 +15,28 @@ class AuthService
         $this->authRepository = $authRepository;
     }
 
-    public function registerUser(array $validated)
+    public function register(array $validated)
     {
-        return $this->authRepository->create($validated);
+        $result = $this->authRepository->create($validated);
+        return $result;
+    }
+
+    public function login(array $credentials)
+    {
+        $login = $this->authRepository->login($credentials);
+        if ($login) {
+            Auth::login($login);
+        } else {
+            $login = false;
+        }
+        return $login;
+    }
+
+    public function logout($request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return true;
     }
 }
