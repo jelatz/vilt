@@ -29,11 +29,15 @@ defineOptions({
 const form = useForm({
     username: '',
     password: '',
+    rememberMe: false,
 })
 
 const fields = [
     { type: "text", label: "Username :", model: "username", id: "username", name: "username", placeholder: "Enter username", inputClass: "mt-1 w-full h-10", labelClass: "block font-bold" },
     { type: "password", label: "Password :", model: "password", id: "password", name: "password", placeholder: "Enter password", inputClass: "mt-1 w-full h-10", labelClass: "block font-bold" },
+    {
+        type: "checkbox", model: "rememberMe", inputClass: "mt-1", labelClass: "block font-bold", options: [{ value: true, label: "Remember Me", id: "rememberMe", name: "rememberMe" }]
+    }
 ];
 
 const loginSubmit = () => {
@@ -44,19 +48,17 @@ const loginSubmit = () => {
                 title: 'Login Successful',
                 text: 'Welcome back!',
             }).then(() => {
-                router('/dashboard')
+                router.visit('/dashboard')
             })
         },
-        onError: (error) => {
-            // Handle login error
+        onError: (errors) => {
             Swal.fire({
                 icon: 'error',
                 title: 'Login Failed',
-                text: error.message,
+                text: errors.message || 'Something went wrong',
             }).then(() => {
                 form.reset('password')
             })
-                ;
         }
     })
 }

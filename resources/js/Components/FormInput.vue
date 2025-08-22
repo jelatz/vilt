@@ -6,7 +6,7 @@
         <input v-if="['text', 'email', 'password', 'number', 'date'].includes(form.type)" :type="form.type"
             :id="form.id" :name="form.name" :placeholder="form.placeholder"
             :class="['rounded-md border shadow-md px-2 py-1', form.inputClass]" :value="modelValue" @input="onInput"
-            @blur="onBlur" />
+            @blur="onBlur" autocomplete="" />
 
         <!-- Textarea -->
         <textarea v-else-if="form.type === 'textarea'" :id="form.id" :name="form.name" :placeholder="form.placeholder"
@@ -28,19 +28,31 @@
             </label>
         </div>
 
-        <!-- Checkbox (array) -->
+        <!-- Checkbox (single or multiple) -->
         <div v-else-if="form.type === 'checkbox'" class="flex gap-2">
-            <label v-for="(option, i) in form.options" :key="i" class="flex items-center gap-1">
-                <input type="checkbox" :value="option.value"
-                    :checked="Array.isArray(modelValue) && modelValue.includes(option.value)" @change="(e) => {
-                        let arr = Array.isArray(modelValue) ? [...modelValue] : [];
-                        if (e.target.checked) arr.push(option.value);
-                        else arr = arr.filter(v => v !== option.value);
-                        $emit('update:modelValue', arr);
+            <label v-for="(option, i) in form.options" :key="i" class="flex items-center gap-1"
+                :for="`${form.id}-${i}`">
+
+                <input type="checkbox" :id="`${form.id}-${i}`" :name="form.name" :value="option.value" :checked="form.options.length === 1
+                    ? !!modelValue
+                    : (Array.isArray(modelValue) && modelValue.includes(option.value))" @change="(e) => {
+                        if (form.options.length === 1) {
+                            // Single checkbox → boolean
+                            $emit('update:modelValue', e.target.checked);
+                        } else {
+                            // Multi-checkbox → array
+                            let arr = Array.isArray(modelValue) ? [...modelValue] : [];
+                            if (e.target.checked) arr.push(option.value);
+                            else arr = arr.filter(v => v !== option.value);
+                            $emit('update:modelValue', arr);
+                        }
                     }" />
+
                 {{ option.label }}
             </label>
         </div>
+
+
         <!-- Error message -->
         <p v-if="errors && errors[form.model]" class="text-red-500 text-sm mt-1">
             {{ errors[form.model] }}

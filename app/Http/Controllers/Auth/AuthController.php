@@ -47,8 +47,9 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validated = $request->validate([
-            'password' => 'required|string',
-            'username' => 'required|string',
+            'username'   => 'required|string',
+            'password'   => 'required|string',
+            'rememberMe' => 'nullable|boolean',
         ]);
 
         $login = $this->authService->login($validated);

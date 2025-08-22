@@ -24,11 +24,11 @@ class AuthService
     public function login(array $credentials)
     {
         $login = $this->authRepository->login($credentials);
+
         if ($login) {
-            Auth::login($login);
-        } else {
-            $login = false;
+            Auth::login($login, $credentials['rememberMe']);
         }
+
         return $login;
     }
 
