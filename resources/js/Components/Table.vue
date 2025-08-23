@@ -28,8 +28,8 @@
     border-bottom: 1px solid #eee;
 }
 
-:deep(table>tbody>tr:hover) {
+/* :deep(table>tbody>tr:hover) {
     background-color: gray;
     color: white;
-}
+} */
 </style>
